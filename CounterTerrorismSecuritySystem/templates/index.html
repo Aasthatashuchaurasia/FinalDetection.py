@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter-Terrorism Surveillance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">CTSS</div>
+        <div class="status">
+            <span class="status-indicator active"></span>
+            <span>ACTIVE SURVEILLANCE</span>
+        </div>
+        <div class="datetime" id="datetime"></div>
+    </header>
+
+    <main class="container">
+        <section class="surveillance-feed">
+            <h2><span class="icon">📹</span> LIVE DETECTION FEED</h2>
+            <div class="feed-container">
+                <img src="{{ url_for('video_feed') }}" id="video" />
+                <div class="feed-overlay">
+                    <div class="alert-count">
+                        <span class="count" id="alertCount">0</span>
+                        <span>ALERTS TODAY</span>
+                    </div>
+                    <div class="detection-stats">
+                        <div class="stat">
+                            <span class="value" id="facesDetected">0</span>
+                            <span>FACES SCANNED</span>
+                        </div>
+                        <div class="stat">
+                            <span class="value" id="threatsDetected">0</span>
+                            <span>THREATS DETECTED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="target-list">
+            <div class="target-header">
+                <h2><span class="icon">🎯</span> TARGET DATABASE</h2>
+                <button class="add-target-btn" id="openModal">+ Add Target</button>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Search targets..." id="searchTarget">
+                <button class="search-btn">🔍</button>
+            </div>
+            <div class="grid" id="targetGrid">
+                {% for name in terrorists %}
+                <div class="target-card" data-name="{{ name }}">
+                    <div class="target-img">
+                        <img src="{{ url_for('static', filename='target_images/' + name + '.jpg') }}" 
+                             onerror="this.src='{{ url_for('static', filename='target_images/default.jpg') }}'" 
+                             alt="{{ name }}">
+                    </div>
+                    <div class="target-info">
+                        <h3>{{ name }}</h3>
+                        <div class="target-status">
+                            <span class="status unknown">STATUS: UNKNOWN</span>
+                            <span class="last-seen">LAST SEEN: N/A</span>
+                        </div>
+                        <button class="delete-btn" data-target="{{ name }}">Delete</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <!-- Add Target Modal -->
+    <div class="modal" id="addTargetModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h2>Add New Target</h2>
+            <form id="targetForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="targetName">Full Name:</label>
+                    <input type="text" id="targetName" required>
+                </div>
+                <div class="form-group">
+                    <label for="targetImage">Upload Image:</label>
+                    <input type="file" id="targetImage" accept="image/*" required>
+                    <div class="image-preview" id="imagePreview">
+                        <img id="previewImage" src="#" alt="Preview" style="display: none;">
+                        <span>No image selected</span>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Add Target</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="alert-toast" id="alertToast">
+        <div class="alert-content">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-message">
+                <h3 class="alert-title">THREAT DETECTED</h3>
+                <p class="alert-desc" id="toastMessage">Unknown threat detected in the area</p>
+            </div>
+            <button class="dismiss-btn" onclick="dismissAlert()">✕</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
